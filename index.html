@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recipe Converter</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Recipe Converter</h1>
+    <div id="converterBox">
+      <div class="recipeBox">
+        <label for="recipeFrom">Original recipe</label>
+        <textarea id="recipeFrom"></textarea>
+      </div>
+      <div class="settingsBox">
+        <div id="portionsBox" class="modeBox">
+          <label for="origPortions">Orig. portions</label>
+          <input id="origPortions" type="number" size="3" value="1" />
+          <label for="origPortions">New portions</label>
+          <input id="newPortions" type="number" size="3" value="2" />
+        </div>
+        <div id="or">or</div>
+        <div id="multiplierBox" class="modeBox">
+          <label for="multiplier">Multiplier</label>
+          <input id="multiplier" type="number" size="3" value="2" />
+        </div>
+        <div class="settingsContent">
+          <button class="btn" id="convertButton">Convert 🡒</button>
+        </div>
+      </div>
+      <div class="recipeBox">
+        <label for="recipeTo">New recipe</label>
+        <textarea id="recipeTo"></textarea>
+      </div>
+    </div>
+
+    <script src="bundle.js"></script>
+  </body>
+</html>
