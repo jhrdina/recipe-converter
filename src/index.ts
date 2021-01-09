@@ -12,6 +12,8 @@ const convertButtonEl = getEl("#convertButton") as HTMLButtonElement;
 const portionsBox = getEl("#portionsBox") as HTMLDivElement;
 const multiplierBox = getEl("#multiplierBox") as HTMLDivElement;
 
+const ROUNDED_UNITS = ["g", "ml"];
+
 // STATE MANAGEMENT
 
 type State = {
@@ -54,6 +56,47 @@ const setState = (newState: State) => {
   convertButtonEl.disabled = !cIsValid;
 };
 
+const NUMBER_REGEX = /\d+([,.]\d*)?/;
+const FRACTION_REGEX = new RegExp(
+  `(${NUMBER_REGEX.source})\\s*\\/\\s*(${NUMBER_REGEX.source})`
+);
+
+type ParsedNumber = {
+  amount: number;
+  rest: string;
+};
+
+const parseNumber = (str: string): ParsedNumber => {
+  let amount = NaN;
+  let rest = str;
+  let res: RegExpExecArray = null;
+
+  console.log(new RegExp(`^${FRACTION_REGEX.source}`));
+
+  if ((res = new RegExp(`^${FRACTION_REGEX.source}`).exec(str))) {
+    // Fraction
+    console.log("parse");
+    const [match, topNum, _, bottomNum] = res;
+    amount = parseFloat(topNum) / parseFloat(bottomNum);
+    rest = str.substr(match.length);
+  } else if ((res = new RegExp(`^${NUMBER_REGEX.source}`).exec(str))) {
+    // Normal number
+    console.log("normal");
+    const [match] = res;
+    amount = parseFloat(match);
+    rest = str.substr(match.length);
+  }
+
+  if (isNaN(amount)) {
+    return { amount: NaN, rest: str };
+  }
+
+  return {
+    amount,
+    rest,
+  };
+};
+
 const convert = () => {
   if (!isValid(state)) {
     return;
@@ -72,38 +115,39 @@ const convert = () => {
 
       // Get amount
 
-      let amount = NaN;
-      let rest = line;
-      let res: RegExpExecArray = null;
+      let res = parseNumber(line);
 
-      if ((res = /^(\d+([,.]\d*)?)\s*\/\s*(\d+([,.]\d*)?)/.exec(line))) {
-        // Fraction
-        const [match, topNum, _, bottomNum] = res;
-        amount = parseFloat(topNum) / parseFloat(bottomNum);
-        rest = line.substr(match.length);
-      } else if ((res = /^\d+([,.]\d*)?/.exec(line))) {
-        // Normal number
-        const [match] = res;
-        amount = parseFloat(match);
-        rest = line.substr(match.length);
-      } else {
-        rest = line;
-      }
-
-      if (isNaN(amount)) {
+      if (isNaN(res.amount)) {
         return line;
       }
 
-      let newAmount = amount * multiplier;
+      let rest = res.rest;
+      let resTo: ParsedNumber = { amount: NaN, rest };
 
-      if (rest.trim().startsWith("g ")) {
+      // Interval
+      if (res.rest.trim().startsWith("-")) {
+        // Try to parse interval end
+        resTo = parseNumber(res.rest.trim().substr(1).trim());
+        rest = resTo.rest;
+      }
+
+      let newAmount = res.amount * multiplier;
+      let newAmountTo = resTo.amount * multiplier;
+
+      if (ROUNDED_UNITS.some((unit) => rest.trim().startsWith(`${unit} `))) {
         newAmount = Math.round(newAmount);
+        newAmountTo = Math.round(newAmountTo);
       } else {
         // Round to two decimal places
         newAmount = Math.round(newAmount * 100) / 100;
+        newAmountTo = Math.round(newAmountTo * 100) / 100;
       }
 
-      return `${newAmount}${rest}`;
+      if (isNaN(newAmountTo)) {
+        return `${newAmount}${rest}`;
+      } else {
+        return `${newAmount} - ${newAmountTo}${rest}`;
+      }
     })
     .join("\n");
 
@@ -133,8 +177,6 @@ multiplierInputEl.addEventListener("focus", () => {
   });
   convert();
 });
-
-const parseNumber = () => {};
 
 const bindNum = (el: HTMLInputElement, prop: keyof State) => {
   const updateVal = () => {
