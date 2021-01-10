@@ -1,7 +1,4 @@
 body {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
   margin: 0;
   padding: 0 16px 16px 16px;
   box-sizing: border-box;
@@ -41,6 +38,12 @@ textarea:focus {
 }
 
 @media (min-width: 600px) {
+  body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   #converterBox {
     flex: 1;
     display: flex;
