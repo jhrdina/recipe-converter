@@ -71,17 +71,13 @@ const parseNumber = (str: string): ParsedNumber => {
   let rest = str;
   let res: RegExpExecArray = null;
 
-  console.log(new RegExp(`^${FRACTION_REGEX.source}`));
-
   if ((res = new RegExp(`^${FRACTION_REGEX.source}`).exec(str))) {
     // Fraction
-    console.log("parse");
     const [match, topNum, _, bottomNum] = res;
     amount = parseFloat(topNum) / parseFloat(bottomNum);
     rest = str.substr(match.length);
   } else if ((res = new RegExp(`^${NUMBER_REGEX.source}`).exec(str))) {
     // Normal number
-    console.log("normal");
     const [match] = res;
     amount = parseFloat(match);
     rest = str.substr(match.length);
