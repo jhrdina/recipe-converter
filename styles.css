@@ -15,7 +15,7 @@ h1 {
   line-height: 0.75;
   font-size: 400%;
   text-align: center;
-  font-family: "EB Garamond", serif;
+  font-family: "Kurale", serif;
   font-weight: normal;
   padding: 0 0.5em;
 }
@@ -195,10 +195,9 @@ input {
   border-radius: 4px;
   padding: 0 8px;
   font-weight: 400;
-  font-style: italic;
-  font-size: 22px;
+  font-size: 26px;
+  font-family: "Kurale", serif;
   color: rgba(0, 0, 0, 0.65);
-  font-family: inherit;
   height: 50px;
   transition: all 0.2s ease;
 }
